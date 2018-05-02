@@ -3,11 +3,18 @@ const app = express();
 const server = require('http').Server(app);
 const path = require('path');
 const bodyParser = require('body-parser');
-const session = require('express-session');
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.static(path.join(__dirname, "/bower_components")));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+var session = require("express-session")({
+    secret: "my-secret",
+    resave: true,
+    saveUninitialized: true
+});
+app.use(session);
+var sharedsession = require("express-socket.io-session");
 
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'ejs');
@@ -17,12 +24,20 @@ server.listen(1337);
 const io = require('socket.io')(server);
 var counter = 0;
 
+io.use(sharedsession(session, {
+    autoSave:true
+}));
+
 io.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('user_data', function (data) {
-        console.log('received user_data at server')
-        console.log(data);
-        socket.emit('thing', data);
+    
+    socket.on('reset_counter', function() {
+        counter = 0;
+        socket.emit('updated_counter', counter);
+    })
+    
+    socket.on('increment_counter', function () {
+        counter++
+        socket.emit('updated_counter', counter);
     });
 });
 

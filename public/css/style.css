@@ -47,7 +47,7 @@ footer {
 	display: flex;
 	margin-top: 40px;
 	flex-direction: column;
-    width: 300px;
+	width: 500px;
 }
 .block {
     display: inline-block;
