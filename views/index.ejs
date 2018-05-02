@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Survey Form</title>
+    <script src="./jquery/dist/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <script type ="text/javascript">
+        $(document).ready(function (){
+    
+            var socket = io(); //1
+    
+            $(document).on('click', "#submit_button", function(event) {
+                event.preventDefault();
+                console.log("Submitted");
+                var user = {
+                    name: $('#name').val(),
+                    location: $('#location').val(),
+                    language: $('#language').val(),
+                    comment: $('#comment').val()
+                }
+                socket.emit('user_data', user);
+                console.log(user);
+            })
+            
+            socket.on('thing', function (user) { //4
+                console.log(user); //5
+                $("#form_stuff").html(`
+                <div class="row">
+                    <div class="block">
+                        <h4>Name:</h4>
+                    </div>
+                    <div class="block">
+                        <h4>${user.name}</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="block">
+                        <h4>Location:</h4>
+                    </div>
+                    <div class="block">
+                        <h4>${user.location}</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="block">
+                        <h4>Favorite Language:</h4>
+                    </div>
+                    <div class="block">
+                        <h4>${user.language}</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="block">
+                        <h4>Comments:</h4>
+                    </div>
+                    <div class="block">
+                        <p>${user.comment}</p>
+                    </div>
+                </div>
+                `)
+                $("#form_stuff").toggleClass('success');
+            });
+        })
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="content">
+            <form id="form" action="" method="POST">
+                <div class="row">
+                    <div class="block">
+                        <h4>Your Name:</h4>
+                    </div>
+                    <div class="block">
+                        <input type="text" name="name" id="name">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="block">
+                        <h4>Dojo Location</h4>
+                    </div>
+                    <div class="block">
+                        <select name="location" id="location">
+                            <option value="Seattle">Seattle</option>
+                            <option value="San Jose">San Jose</option>
+                            <option value="Chicago">Chicago</option>
+                            <option value="San Fransisco">San Fransisco</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="block">
+                        <h4>Favorite Language:</h4>
+                    </div>
+                    <div class="block">
+                        <select name="language" id="language">
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="Python">Python</option>
+                            <option value="C#">C#</option>
+                            <option value="Java">Java</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <h4>Comments (optional):</h4>
+                </div>
+                <div class="row">
+                    <textarea name="comment" id="comment" cols="50" rows="5"></textarea>
+                </div>
+                <div class="row">
+                    <button id="submit_button" class="btn">Submit</button>
+                </div> 
+            </form>
+            <div id="form_stuff">
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
